@@ -1,4 +1,4 @@
-# WebinarPOC
+# SenchaPOC
 
 Steps to run the application in local:
 
@@ -6,8 +6,7 @@ Steps to run the application in local:
 2. Download and Install Sencha CMD 6.5.3.6
 3. Run "sencha which" from command prompt to make sure the correct sencha cmd version is installed
 4. Download the sample code from Github.
-5. In this sample app, SenchaPOC is the root folder.
-5. Navigate to SenchaPOC folder from command prompt(cd C:\..\SenchaPOC)
+5. Navigate to folder where you have downloaded the code using command prompt(For example, cd C:\..\SenchaPOC)
 6. Run "sencha app watch" to launch the application. You'll notice "waiting for changes.." message once it is started
 7. Launch http://localhost:1841 from your browser to view the application.
 
