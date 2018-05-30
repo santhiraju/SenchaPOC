@@ -1,5 +1,17 @@
-/build
-bootstrap.*
-classic.json*
-modern.json*
-.sencha
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+/src/main/webapp/build
+/src/main/webapp/bootstrap.*
+/src/main/webapp/classic.json*
+/src/main/webapp/modern.json*
+/src/main/webapp/.sencha

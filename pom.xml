@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.docker.demo</groupId>
+	<artifactId>sencha-docker-demo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>SenchaDockerDemo</name>
+	<description>Demo project for Spring Boot</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.2.RELEASE</version>
+		<relativePath />
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<cmd.dir>provide your sencha cmd installation directory</cmd.dir>
+		<sencha.env>production</sencha.env>
+		<docker.image.prefix>ui-app</docker.image.prefix>
+		<start-class>com.poc.App</start-class>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>production</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>production</value>
+				</property>
+			</activation>
+		</profile>
+	</profiles>
+	
+	<build>
+		<plugins>
+
+			<!-- Sencha Maven Build -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sencha-app-build</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<echo>Start Sencha Cmd build...</echo>
+							<target>
+								<taskdef resource="com/sencha/ant/antlib.xml"
+									classpath="${cmd.dir}/sencha.jar" loaderref="senchaloader" />
+								<echo>Start Sencha Cmd build...</echo>
+								<x-sencha-command
+									dir="${basedir}/src/main/webapp">
+									app
+									build
+								</x-sencha-command>
+								<echo>End build process</echo>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+	
+			<!-- Put the build directory inside static folder -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/src/main/resources/static/WebinarPOC</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/src/main/webapp/build/production/WebinarPOC</directory>
+									<includes>
+										<include>**/*</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>1.1.0</version>
+				<executions>
+				
+					<!-- BUILD THE IMAGE -->
+					<execution>
+			      		<id>build-image</id>
+			      		<phase>package</phase>
+			      		<goals>
+			        		<goal>build</goal>
+			      		</goals>
+			      		<configuration>
+							<imageName>${docker.image.prefix}:${project.version}</imageName>
+							<!-- <baseImage>java</baseImage>
+					        <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint> -->
+												
+							<!-- The content of  src/main/docker will be copied into target/docker -->
+							<dockerDirectory>src/main/docker</dockerDirectory>
+							<resources>
+								<resource>
+									<targetPath>/</targetPath>
+									<directory>${project.build.directory}</directory>
+									<include>${project.build.finalName}.jar</include>
+								</resource>
+							</resources>
+						</configuration>
+				    </execution>
+				    
+				    <!-- TAG THE IMAGE -->
+				    <execution>
+				       <id>tag-image</id>
+				       <phase>package</phase>
+				       <goals>
+				         <goal>tag</goal>
+				       </goals>
+				       <configuration>
+				       	 <forceTags>true</forceTags>
+				         <image>${docker.image.prefix}:${project.version}</image>
+				         <newName>ui-app/demo:latest</newName>
+				       </configuration>
+				    </execution>
+				    
+				    <!-- PUSH THE IMAGE -->
+				    <!-- <execution>
+				       <id>push-image</id>
+				       <phase>package</phase>
+				       <goals>
+				          <goal>push</goal>
+				       </goals>
+				       <configuration>
+				       	  <forceTags>true</forceTags>
+				          <imageName>ui-app/demo</imageName>
+				          <serverId>docker-hub</serverId>
+				          <registryUrl>https://index.docker.io/v1/</registryUrl>
+				       </configuration>
+				    </execution> -->
+				    
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
