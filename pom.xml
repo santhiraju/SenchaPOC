@@ -27,6 +27,7 @@
 		<sencha.env>production</sencha.env>
 		<docker.image.prefix>ui-app</docker.image.prefix>
 		<start-class>com.poc.App</start-class>
+		<server-url>[[accountid]].dkr.ecr.[[region]].amazonaws.com</server-url>
 	</properties>
 
 	<dependencies>
@@ -137,7 +138,7 @@
 			      		<configuration>
 							<imageName>${docker.image.prefix}:${project.version}</imageName>
 							<!-- <baseImage>java</baseImage>
-					        <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint> -->
+					        	<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint> -->
 												
 							<!-- The content of  src/main/docker will be copied into target/docker -->
 							<dockerDirectory>src/main/docker</dockerDirectory>
@@ -161,24 +162,25 @@
 				       <configuration>
 				       	 <forceTags>true</forceTags>
 				         <image>${docker.image.prefix}:${project.version}</image>
-				         <newName>ui-app/demo:latest</newName>
+				         <newName>${server-url}/uiapp</newName>
 				       </configuration>
 				    </execution>
 				    
 				    <!-- PUSH THE IMAGE -->
-				    <!-- <execution>
+				    <execution>
 				       <id>push-image</id>
 				       <phase>package</phase>
 				       <goals>
 				          <goal>push</goal>
 				       </goals>
 				       <configuration>
-				       	  <forceTags>true</forceTags>
-				          <imageName>ui-app/demo</imageName>
-				          <serverId>docker-hub</serverId>
-				          <registryUrl>https://index.docker.io/v1/</registryUrl>
+				       	   <forceTags>true</forceTags>
+				           <imageName>${server-url}/uiapp</imageName>
+				           <serverId>aws-ecr</serverId>
+				           <registryUrl>${server-url}</registryUrl>
+				           <retryPushCount>1</retryPushCount>
 				       </configuration>
-				    </execution> -->
+				    </execution>
 				    
 				</executions>
 			</plugin>
