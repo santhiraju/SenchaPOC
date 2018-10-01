@@ -1,0 +1,19 @@
+FROM java:8-jre
+
+RUN apt-get update && \
+    apt-get install -y \
+        curl \
+        unzip
+
+RUN curl -o /cmd.run.zip http://cdn.sencha.com/cmd/6.5.2.15/SenchaCmd-6.5.2.15-linux-amd64.sh.zip && \
+    unzip -p /cmd.run.zip > /cmd-install.run && \
+    chmod +x /cmd-install.run && \
+    /cmd-install.run -q -dir /opt/Sencha/Cmd/6.5.2.15 && \
+    rm /cmd-install.run /cmd.run.zip
+
+RUN mkdir /src
+WORKDIR /src
+ENV PATH="/opt/Sencha/Cmd:$PATH"
+COPY . /src
+EXPOSE 1841
+CMD ["sencha", "app", "build"]
