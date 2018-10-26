@@ -16,4 +16,4 @@ WORKDIR /src
 ENV PATH="/opt/Sencha/Cmd:$PATH"
 COPY . /src
 EXPOSE 1841
-CMD ["sencha", "app", "build"]
+CMD ["sencha", "app", "watch"]
