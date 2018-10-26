@@ -1,3 +1,6 @@
-FROM nginx
-COPY /ui/* /usr/share/nginx/html/
+FROM nginx:alpine
+COPY . /usr/share/nginx/html/
+RUN chmod -R o+x /usr/share/nginx/html/classic/
+RUN chmod -R o+x /usr/share/nginx/html/modern/
+RUN chmod -R o+x /usr/share/nginx/html/resources/
 EXPOSE 80
